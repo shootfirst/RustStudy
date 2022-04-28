@@ -23,6 +23,44 @@ rust指针 （pointer）是一个包含内存地址的变量的通用概念。�
     + 在任意给定时间，要么 只能有一个可变引用，要么 只能有多个不可变引用
 
     + 引用必须总是有效的，避免悬垂引用，可用生命周期保证
+    
+
+    - 相关方法
+    
+        - pub const fn as_ptr(self) -> *const T
+
+            - 将裸指针返回到切片的缓冲区
+
+            - 这等效于将 self 强制转换为 *const T，但类型安全性更高
+    
+        - pub const fn as_mut_ptr(&mut self) -> *mut T
+
+            - 返回指向切片缓冲区的不安全可变指针
+
+            - 调用者必须确保切片比该函数返回的指针有效，否则它将最终指向垃圾
+
+            - 修改此切片引用的容器可能会导致重新分配其缓冲区，这也将使指向它的任何指针无效
+
+        - pub unsafe fn from_raw_parts<'a, T>(data: *const T, len: usize) -> &'a [T]
+
+            - 根据指针和长度形成切片
+
+            - len 参数是 元素 的数量，而不是字节数
+
+        - pub unsafe fn from_raw_parts_mut<'a, T>(data: *mut T, len: usize) -> &'a mut [T]
+            
+            - 执行与 from_raw_parts 相同的功能，除了返回可变切片
+
+        
+    - str相关方法
+
+        - pub const fn as_bytes(&self) -> &[u8]ⓘ
+
+            - 将字符串切片转换为字节切片。 要将字节切片切回为字符串切片，请使用 from_utf8 函数
+            
+        - pub unsafe fn as_bytes_mut(&mut self) -> &mut [u8]ⓘ
+
+            - 将可变字符串片段转换为可变字节片段。
 
 + 智能指针
 
@@ -39,8 +77,15 @@ rust指针 （pointer）是一个包含内存地址的变量的通用概念。�
     + Deref 强制转换将这样一个类型的引用转换为另一个类型的引用，可实现自动解引用
 
     + Box, Rc, RefCell, Weak, Mutex, Rwlock, Arc, String, Vec
+    
+    
+    - 相关方法
 
-+ 裸指针
+        
+    
+        - 
+
++ 裸指针 Pointer
 
     + 裸指针与引用和智能指针的区别在于
 
@@ -51,3 +96,82 @@ rust指针 （pointer）是一个包含内存地址的变量的通用概念。�
         + 允许为空
          
         + 不能实现任何自动清理功能
+    
+    
+    - 相关方法
+
+        - pub const unsafe fn copy_from(self, src: *const T, count: usize)
+    
+            - 将 count * size_of<T> 字节从 src 复制到 self。 源和目标可能会重叠
+        
+        - pub const unsafe fn copy_to(self, dest: *mut T, count: usize)
+
+            - 将 count * size_of<T> 字节从 self 复制到 dest。 源和目标可能会重叠
+        
+        - pub unsafe fn write_bytes(self, val: u8, count: usize)
+    
+            - 在指定的指针上调用 memset，将 self 开始的 count * size_of::<T>() 内存字节设置为 val
+        
+        - pub const unsafe fn write(self, val: T)
+
+            -用给定值覆盖存储位置，而无需读取或丢弃旧值
+        
+        - pub const unsafe fn read(self) -> T
+
+            - 从 self 读取值而不移动它。 这将使 self 中的内存保持不变
+    
+        - pub unsafe fn write_volatile(self, val: T)
+
+            - 使用给定值对存储单元执行易失性写操作，而无需读取或丢弃旧值
+
+            - 易失性操作旨在作用于 I/O 存储器，并保证编译器不会在其他易失性操作中对易失性操作进行清除或重新排序
+    
+        - pub unsafe fn read_volatile(self) -> T
+
+            - 对 self 的值进行易失性读取，而无需移动它。这将使 self 中的内存保持不变
+
+            - 易失性操作旨在作用于 I/O 存储器，并保证编译器不会在其他易失性操作中对易失性操作进行清除或重新排序
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+
